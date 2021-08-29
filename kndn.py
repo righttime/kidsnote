@@ -99,6 +99,7 @@ def open_article_and_get_data(article):
     global next_last_article
     article_id = int(article.split('/')[2])
     if article_id <= last_article:
+        print(f'Current Article [{article_id}] - Last downloaded [{last_article}]')
         return
     next_last_article = max(article_id, next_last_article)
 
@@ -167,6 +168,7 @@ def open_album_and_get_data(album):
     global next_last_album
     album_id = int(album.split('/')[2])
     if album_id <= last_album:
+        print(f'Current Album [{album_id}] - Last downloaded [{last_album}]')
         return
     next_last_album = max(album_id, next_last_album)
 
@@ -226,6 +228,8 @@ def download_all_articles():
             total_article += 1
             # 각 이미지를 다운로드
             info = open_article_and_get_data(article)
+            if info == None:
+                return
             article_date = parse_datetime(info['main']['date'])
             # 중복 해결
             idx_delta = 0
@@ -261,6 +265,8 @@ def download_all_albums():
             total_albums += 1
             # 각 이미지를 다운로드
             info = open_album_and_get_data(album)
+            if info == None:
+                return
             album_date = parse_datetime(info['main']['date'])
             # 중복 해결
             idx_delta = 0
@@ -294,7 +300,7 @@ download_all_albums()
 config.set('KIDSNOTE', 'LastAlbum', str(next_last_album))
 config.set('KIDSNOTE', 'LastArticle', str(next_last_article))
 
-with open('kidsnote1.ini', 'w') as fs:
+with open('kidsnote.ini', 'w') as fs:
     config.write(fs)
 
 # article_list = open_page_and_get_article_list(1)
