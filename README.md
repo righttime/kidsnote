@@ -1,39 +1,55 @@
 # kidsnote downloader cli
-## 키즈노트의 사진을 다운받아 보자
-- 사진의 Created time update with exif 인데... 이건 윈도우에서만 가능? 리눅스만 가지고 하면 될듯?
-- 어떤 시간을 기준으로 되는걸까?
-- 요 파일들을... 다 올리면 되는건데 ...
-- NAS 로? MOBILE 로?
-## 선생님, 부모님의 이야기도 보존해 보자
-- 일단 JSON 정도라도.
-
-## REQUEST
-
-### Header 
+## 키즈노트의 사진을 다운
+- 모든 사진을 다운로드 (알림장, 앨범)
+- 파일 명을 시간 순으로
+- 파일 접근 시간을 Exif 또는 알림장 작성일 로 설정
+  - 이유는 Google Photo 에 업로드 용
+## 키즈노트의 글들도 다운
+- JSON 형태로 다운로드 
 ```
-POST /login/ HTTP/1.1
-Host: www.kidsnote.com
-Connection: keep-alive
-Content-Length: 127
-Cache-Control: max-age=0
-sec-ch-ua: "Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"
-sec-ch-ua-mobile: ?0
-Upgrade-Insecure-Requests: 1
-Origin: https://www.kidsnote.com
-Content-Type: application/x-www-form-urlencoded
-User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: same-origin
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Referer: https://www.kidsnote.com/login/
-Accept-Encoding: gzip, deflate, br
-Accept-Language: ko
-Cookie: csrftoken=V7YSJydSaiwyCEf6jU2gsnDlUwPi89oHQ0d2qRlyd3r4Jpn7KC78aIt6Oxgxuhwe; sessionid=ukmguzgtuup28gzotuzefdwzw3t9egx3; _ga=GA1.2.447816361.1629811691; _gid=GA1.2.1163741950.1629811691; _gat=1
+{
+    "main": {
+        "author": "2018-새싹반 교사",
+        "date": "2018년 9월 18일 화요일",
+        "content": "내용 내용 내용"
+    },
+    "comments": [
+        {
+            "author": "아기 엄마",
+            "date": "9.19 오전 8:54",
+            "content": "내용 내용 내용"
+        },
+        {
+            "author": "2018-새싹반 교사",
+            "date": "9.19 오전 10:06",
+            "content": "내용 내용 내용"
+        },
+        {
+            "author": "아기 아빠",
+            "date": "9.19 오전 10:08",
+            "content": "내용 내용 내용"
+        }
+    ]
+}
 ```
-### Formdata
-- csrfmiddlewaretoken : qg4u6lWF2kanlHhWrX5ht1t9jp2UnPhtNkjWzmLrFvfniJ0FOpZzZ67NPq5vMWvq
-- username
-- password
-- next
+## 실행 할 때마다 증분 형식으로 받음
+- 최초는 모든 아이템 다운로드
+- 이후는 다운로드 한 아이템은 제외 (kidsnote.ini 파일 유지 되어야 함)
+
+## 사용법
+- 리눅스 환경 만 지원(ubuntu 18.04 이후 추천)
+- kidsnote.ini 를 설정
+  - id : 계정 id
+  - pw : 계정 암호
+  - nick : 아무거나 상관없음
+  - downpath : 실제 다운로드 될 경로, 절대 경로 추천, 마지막 슬래시 제외
+  - lastarticle, lastalbum : 마지막 다운로드한 글의 id (모두 받으려면 0으로 설정)
+  - 아래 명령어로 실행
+```
+pip install -r requirements.txt
+python3 kndn.py
+```
+
+- 코드를 깔끔하게 만들고 싶었는데...그냥 대충 잘 동작하길래 멈춥니다. 
+- 아기가 둘이신 분들은 어떻게 될지 모르겠네요. 제가 애가 하나 뿐이라...
+- 누군가에겐 도움이 되길
