@@ -9,7 +9,7 @@ from utils import *
 
 
 config = configparser.ConfigParser()
-config.read('kidsnote.ini')
+config.read('kidsnote.ini', encoding='utf8')
 
 s = requests.Session()
 s.mount('https://', HTTPAdapter())
@@ -17,6 +17,8 @@ s.mount('https://', HTTPAdapter())
 base_path = config['KIDSNOTE']['DownPath']
 next_last_article= last_article = int(config['KIDSNOTE']['LastArticle'])
 next_last_album = last_album = int(config['KIDSNOTE']['LastAlbum'])
+
+print( config['KIDSNOTE']['Id'])
 
 csrfmiddlewaretoken = ""
 request_headers = {'User-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73',
@@ -99,7 +101,7 @@ def open_article_and_get_data(article):
     if article_id <= last_article:
         return
     next_last_article = max(article_id, next_last_article)
-    
+
     res = s.get(f'https://www.kidsnote.com{article}', headers=request_headers)
     
     soup = bs(res.text, features='html.parser')
@@ -238,11 +240,11 @@ def download_all_articles():
                 total_image += 1
                 # 날짜 변경
                 filename = make_filename('article', article_date, idx+idx_delta)
-                download_img(info['images'][idx], filename)
-                update_file_time(filename, article_date)
+                download_img(info['images'][idx], base_path, filename)
+                update_file_time(base_path, filename, article_date)
                 print(f'PAGE[{total_page}] ART[{total_article}] IMG[{total_image}] : {article_date}')
             filename = make_filename('article', article_date, idx_delta)
-            write_message(info, filename) 
+            write_message(info, base_path, filename) 
     
 def download_all_albums():
     # 각 페이지 마다 돌면서 
