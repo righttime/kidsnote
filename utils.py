@@ -11,6 +11,11 @@ def download_img(url, basepath, filename):
         res = requests.get(url)
         file.write(res.content)
 
+def download_movie(url, basepath, filename):
+    with open(f'{basepath}/{filename}.mp4', "wb") as file:
+        res = requests.get(url)
+        file.write(res.content)
+
 def parse_datetime(report_date):
     short_date = report_date[:report_date.rfind(' ')]
     try:
@@ -51,12 +56,16 @@ def update_file_time(basepath:str, filename:str, article_date:str):
         tm = time.mktime(datetime(*[int(x) for x in exif_time.replace(' ', ':').split(':')]).timetuple())
     os.utime(f'{basepath}/{filename}.jpg', (tm, tm))
 
+def update_file_time_movie(basepath:str, filename:str, article_date:str):
+    tm = time.mktime(datetime(*([int(x) for x in article_date.split('_')] + [12,0,0])).timetuple())
+    os.utime(f'{basepath}/{filename}.mp4', (tm, tm))
 
 
 def write_message(message, basepath, filename):
     with open(f'{basepath}/{filename}.json', "w", encoding='utf8') as file:
         only_msg = dict(message)
         del only_msg['images']
+        del only_msg['movie']
         #print(only_msg)
         json.dump(only_msg, file, ensure_ascii=False)
         #file.write(only_msg)

@@ -108,6 +108,12 @@ def open_article_and_get_data(article):
     soup = bs(res.text, features='html.parser')
     _author_info = soup.find('div', attrs={'class':'author-info'})
     _main_msg = soup.find('div', attrs={'class':'content-text'})
+
+    if soup.find('div', attrs={'class':'download-button-wrapper'}) == None:
+        _movie_link = ''
+    else:    
+        _movie_link = soup.find('div', attrs={'class':'download-button-wrapper'}).find('a').attrs['href']
+
     _img_container = []
     try:
         _img_container = soup.find('div', id='img-grid-container').find_all('a')
@@ -138,6 +144,8 @@ def open_article_and_get_data(article):
 
     for img in _img_container:
         info['images'].append(img.attrs['data-download'])
+
+    info['movie'] = _movie_link
 
     #print(info)
     #print(len(info['images']))
@@ -177,6 +185,7 @@ def open_album_and_get_data(album):
     soup = bs(res.text, features='html.parser')
     _author_info = soup.find('div', attrs={'class':'author-info'})
     _main_msg = soup.find('div', attrs={'class':'content-text'})
+
     _img_container = []
     try:
         _img_container = soup.find('div', id='img-grid-container').find_all('a')
@@ -217,6 +226,7 @@ def download_all_articles():
     # 각 페이지 마다 돌면서 
     total_page = 0
     total_article = 0
+    total_movie = 0
     total_image = 0
     for page in range(1, max_page+1):
         total_page += 1
@@ -240,13 +250,20 @@ def download_all_articles():
                 previous_idx_delta = 0
             previous_article_date = article_date
 
+            if info['movie'] != '':
+                total_movie += 1
+                filename = make_filename('movie', article_date, idx_delta)
+                download_movie(info['movie'], base_path, filename)
+                update_file_time_movie(base_path, filename, article_date)
+
+
             for idx in range(len(info['images'])):
                 total_image += 1
                 # 날짜 변경
                 filename = make_filename('article', article_date, idx+idx_delta)
                 download_img(info['images'][idx], base_path, filename)
                 update_file_time(base_path, filename, article_date)
-                print(f'PAGE[{total_page}] ART[{total_article}] IMG[{total_image}] : {article_date}')
+                print(f'PAGE[{total_page}] ART[{total_article}] IMG[{total_image}] MOV[{1}] : {article_date}')
             filename = make_filename('article', article_date, idx_delta)
             write_message(info, base_path, filename) 
     
@@ -293,23 +310,29 @@ login()
 set_nick_name()
 open_box_of_remember()
 open_reports()
-download_all_articles()
-open_albums()
-download_all_albums()
+#download_all_articles()
+#open_albums()
+#download_all_albums()
 
-config.set('KIDSNOTE', 'LastAlbum', str(next_last_album))
-config.set('KIDSNOTE', 'LastArticle', str(next_last_article))
+#config.set('KIDSNOTE', 'LastAlbum', str(next_last_album))
+#config.set('KIDSNOTE', 'LastArticle', str(next_last_article))
 
-with open('kidsnote.ini', 'w') as fs:
-    config.write(fs)
+#with open('kidsnote.ini', 'w') as fs:
+#    config.write(fs)
 
-# article_list = open_page_and_get_article_list(1)
-# info = open_article_and_get_data(article_list[1])
-# article_date = parse_datetime(info['main']['date']) # 2021_08_24
-# filename = make_filename(article_date, 1)
-# download_img(info['images'][0], filename)
-# update_file_time(filename, article_date)
-# write_message(info, filename) 
+article_list = open_page_and_get_article_list(1)
+print(article_list)
+testurl = '/reports/525388012/?req=/reports/%3Fpage%3D8'
+#testurl = '/reports/586334416/?req=/reports/%3Fpage%3D1'
+info = open_article_and_get_data(testurl)
+print(info)
+
+article_date = parse_datetime(info['main']['date']) # 2021_08_24
+filename = make_filename('movie', article_date, 1)
+if info['movie'] != '':
+    download_movie(info['movie'], base_path, filename)
+    update_file_time_movie(base_path, filename, article_date)
+write_message(info, base_path, filename) 
 
 # open_albums()
 # album_list = open_page_and_get_album_list(1)
