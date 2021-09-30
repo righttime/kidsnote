@@ -263,7 +263,7 @@ def download_all_articles():
                 filename = make_filename('article', article_date, idx+idx_delta)
                 download_img(info['images'][idx], base_path, filename)
                 update_file_time(base_path, filename, article_date)
-                print(f'PAGE[{total_page}] ART[{total_article}] IMG[{total_image}] MOV[{1}] : {article_date}')
+                print(f'PAGE[{total_page}] ART[{total_article}] IMG[{total_image}] MOV[{total_movie}] : {article_date}')
             filename = make_filename('article', article_date, idx_delta)
             write_message(info, base_path, filename) 
     
@@ -304,35 +304,35 @@ def download_all_albums():
             filename = make_filename('album', album_date, idx_delta)
             write_message(info, base_path, filename) 
     
-    
+
 open_first_page()
 login()
 set_nick_name()
 open_box_of_remember()
 open_reports()
-#download_all_articles()
-#open_albums()
-#download_all_albums()
+download_all_articles()
+open_albums()
+download_all_albums()
 
-#config.set('KIDSNOTE', 'LastAlbum', str(next_last_album))
-#config.set('KIDSNOTE', 'LastArticle', str(next_last_article))
+config.set('KIDSNOTE', 'LastAlbum', str(next_last_album))
+config.set('KIDSNOTE', 'LastArticle', str(next_last_article))
 
-#with open('kidsnote.ini', 'w') as fs:
-#    config.write(fs)
+with open('kidsnote.ini', 'w') as fs:
+    config.write(fs)
 
-article_list = open_page_and_get_article_list(1)
-print(article_list)
-testurl = '/reports/525388012/?req=/reports/%3Fpage%3D8'
+#article_list = open_page_and_get_article_list(1)
+#print(article_list)
+#testurl = '/reports/525388012/?req=/reports/%3Fpage%3D8'
 #testurl = '/reports/586334416/?req=/reports/%3Fpage%3D1'
-info = open_article_and_get_data(testurl)
-print(info)
+#info = open_article_and_get_data(testurl)
+#print(info)
 
-article_date = parse_datetime(info['main']['date']) # 2021_08_24
-filename = make_filename('movie', article_date, 1)
-if info['movie'] != '':
-    download_movie(info['movie'], base_path, filename)
-    update_file_time_movie(base_path, filename, article_date)
-write_message(info, base_path, filename) 
+#article_date = parse_datetime(info['main']['date']) # 2021_08_24
+#filename = make_filename('movie', article_date, 1)
+#if info['movie'] != '':
+#    download_movie(info['movie'], base_path, filename)
+#    update_file_time_movie(base_path, filename, article_date)
+#write_message(info, base_path, filename) 
 
 # open_albums()
 # album_list = open_page_and_get_album_list(1)

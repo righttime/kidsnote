@@ -65,7 +65,8 @@ def write_message(message, basepath, filename):
     with open(f'{basepath}/{filename}.json', "w", encoding='utf8') as file:
         only_msg = dict(message)
         del only_msg['images']
-        del only_msg['movie']
+        if 'movie' in only_msg:
+            del only_msg['movie']
         #print(only_msg)
         json.dump(only_msg, file, ensure_ascii=False)
         #file.write(only_msg)
